@@ -68,6 +68,10 @@ Closing summary for slides:
 
 The Simulink implementation mirrors the MATLAB pipeline and supports both control performance evaluation and visual demonstration.
 
+Available Simulink figure:
+
+- `plots/simulink_model.pdf`: exported overview of the Simulink model layout for documentation and slides
+
 ## MATLAB Script Workflow
 
 The main script is:
@@ -85,6 +89,8 @@ This script builds the model, runs the scenarios, computes tracking metrics, and
 - Step 5A: studies plant uncertainty by reducing tire cornering stiffness and optionally perturbing inertia terms
 - Step 5B: injects a crosswind-like lateral disturbance pulse
 - Step 6: computes residual-based novelty signals `w_hat`, `w_inf`, and `w_max`
+
+The script exports a matching set of figures for each major step, so the numerical workflow in MATLAB is directly tied to the documentation images stored in `plots/`.
 
 ### Vehicle and control assumptions
 
@@ -118,6 +124,11 @@ Two reference-curvature cases are implemented:
 
 These cases are reused across open-loop, closed-loop, constrained, uncertainty, wind, and novelty-estimation studies so the behavior can be compared on a common basis.
 
+Open-loop figures generated from these scenarios:
+
+- `plots/scenario_A_lane_change.png`
+- `plots/scenario_B_constant_turn.png`
+
 ## Novelty / Residual Estimation
 
 The novelty-oriented estimator compares the measured next state against the nominal one-step predictor:
@@ -138,6 +149,11 @@ In the current workspace, these signals are used to distinguish nominal behavior
 - Wind disturbance
 
 This provides a simple baseline mechanism for detecting mismatch before moving to adaptive tube sizing or more advanced robust control logic.
+
+Novelty-estimation figures:
+
+- `plots/scenario_B_what_overlay.png`
+- `plots/scenario_B_wmax_overlay.png`
 
 ## Workspace Structure
 
@@ -172,16 +188,65 @@ At the moment, the active implementation is concentrated mainly in `src/`, `util
 
 ## Generated Plots
 
-The `plots/` folder contains exported figures for:
+The `plots/` folder contains exported figures produced directly from `src/main_baseline.m`. These figures document the full baseline study and provide a clean record of each simulation stage for reports, slides, and comparison against the Simulink implementation.
 
-- Open-loop lane-change and constant-turn behavior
-- LQR closed-loop tracking
-- Constrained versus unconstrained actuator response
-- Parameter-uncertainty comparisons
-- Crosswind-disturbance comparisons
-- Residual and rolling-bound overlays for novelty detection
+### Simulink model figure
 
-These figures are produced directly from `src/main_baseline.m` and are useful for reports, slides, and validation against the Simulink implementation.
+- `plots/simulink_model.pdf`: exported Simulink architecture view
+
+### Step 2: Open-loop response
+
+- `plots/scenario_A_lane_change.png`: lane-change curvature input with resulting lateral and heading errors
+- `plots/scenario_B_constant_turn.png`: constant-turn curvature input with resulting lateral and heading errors
+
+![Lane-change open-loop response](plots/scenario_A_lane_change.png)
+
+![Constant-turn open-loop response](plots/scenario_B_constant_turn.png)
+
+### Step 3: Baseline LQR closed-loop tracking
+
+- `plots/scenario_A_lane_change_LQR.png`: closed-loop lane-change tracking with steering command
+- `plots/scenario_B_constant_turn_LQR.png`: closed-loop constant-turn tracking with steering command
+
+![Lane-change LQR tracking](plots/scenario_A_lane_change_LQR.png)
+
+![Constant-turn LQR tracking](plots/scenario_B_constant_turn_LQR.png)
+
+### Step 4: Actuator-constrained tracking
+
+- `plots/scenario_A_lane_change_LQR_constraints.png`: lane-change comparison between unconstrained and constrained steering behavior
+- `plots/scenario_B_constant_turn_LQR_constraints.png`: constant-turn comparison between unconstrained and constrained steering behavior
+
+![Lane-change actuator constraints](plots/scenario_A_lane_change_LQR_constraints.png)
+
+![Constant-turn actuator constraints](plots/scenario_B_constant_turn_LQR_constraints.png)
+
+### Step 5A: Parameter-uncertainty study
+
+- `plots/scenario_A_lane_change_uncertainty.png`: lane-change comparison between nominal and uncertain plant behavior
+- `plots/scenario_B_constant_turn_uncertainty.png`: constant-turn comparison between nominal and uncertain plant behavior
+
+![Lane-change uncertainty study](plots/scenario_A_lane_change_uncertainty.png)
+
+![Constant-turn uncertainty study](plots/scenario_B_constant_turn_uncertainty.png)
+
+### Step 5B: Crosswind-disturbance study
+
+- `plots/scenario_A_lane_change_wind.png`: lane-change response under a lateral wind-force pulse
+- `plots/scenario_B_constant_turn_wind.png`: constant-turn response under a lateral wind-force pulse
+
+![Lane-change wind study](plots/scenario_A_lane_change_wind.png)
+
+![Constant-turn wind study](plots/scenario_B_constant_turn_wind.png)
+
+### Step 6: Novelty residual and rolling-bound plots
+
+- `plots/scenario_B_what_overlay.png`: overlay of instantaneous residual norm `w_inf` for nominal, uncertainty, and wind cases
+- `plots/scenario_B_wmax_overlay.png`: overlay of rolling disturbance bound `w_max` for nominal, uncertainty, and wind cases
+
+![Residual norm overlay](plots/scenario_B_what_overlay.png)
+
+![Rolling disturbance bound overlay](plots/scenario_B_wmax_overlay.png)
 
 ## How To Use
 
@@ -190,7 +255,7 @@ These figures are produced directly from `src/main_baseline.m` and are useful fo
 1. Open MATLAB in the project root.
 2. Run `src/main_baseline.m`.
 3. Review printed metrics in the Command Window.
-4. Inspect exported figures in `plots/`.
+4. Inspect the exported figures in `plots/` for the open-loop, LQR, constrained, uncertainty, wind, and novelty-estimation results.
 
 ### Simulink workflow
 
@@ -204,3 +269,4 @@ These figures are produced directly from `src/main_baseline.m` and are useful fo
 - The MATLAB script is currently the most explicit source of implementation details and numerical settings.
 - The Simulink model is intended to mirror the same tracking logic rather than introduce a separate control design.
 - Generated folders such as `slprj/` and cache files such as `.slxc` are normal Simulink artifacts.
+- The README plot links assume the repository is viewed on GitHub or in a Markdown viewer that supports relative image paths.
