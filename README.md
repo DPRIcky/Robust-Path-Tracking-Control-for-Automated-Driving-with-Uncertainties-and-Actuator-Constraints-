@@ -155,6 +155,84 @@ Novelty-estimation figures:
 - `plots/scenario_B_what_overlay.png`
 - `plots/scenario_B_wmax_overlay.png`
 
+## Current Baseline Metrics
+
+The following values come from the latest execution of `src/main_baseline.m` on March 24, 2026.
+
+### Nominal LQR tracking
+
+Lane change:
+
+- `RMS(e_y) = 0.0017 m`
+- `Max|e_y| = 0.0039 m`
+- `Max|delta_cmd| = 0.0766 rad` (`4.4 deg`)
+
+Constant turn:
+
+- `RMS(e_y) = 0.0014 m`
+- `Max|e_y| = 0.0020 m`
+- `Max|delta_cmd| = 0.0394 rad` (`2.3 deg`)
+
+### Actuator-constrained tracking
+
+Lane change:
+
+- unconstrained and constrained metrics are effectively identical
+- `Max|delta_rate| = 0.0482 rad/s`
+- `0.000%` time rate-limited
+- `0.000%` time angle-saturated
+
+Constant turn:
+
+- unconstrained `Max|delta_rate| = 1.3000 rad/s`
+- constrained `Max|delta_applied| = 0.0562 rad` (`3.2 deg`)
+- constrained `Max|delta_rate| = 0.5000 rad/s`
+- `2.800%` time rate-limited
+- `0.000%` time angle-saturated
+
+### Parameter-uncertainty study
+
+The uncertainty case uses `Cf_real = 0.7 Cf` and `Cr_real = 0.7 Cr` with the same nominal LQR gain.
+
+Lane change:
+
+- nominal `RMS(e_y) = 0.0017 m`
+- uncertainty `RMS(e_y) = 0.0028 m`
+- uncertainty `Max|e_y| = 0.0064 m`
+
+Constant turn:
+
+- nominal `RMS(e_y) = 0.0014 m`
+- uncertainty `RMS(e_y) = 0.0023 m`
+- uncertainty `Max|e_y| = 0.0040 m`
+- uncertainty rate-limited fraction increases to `4.400%`
+
+### Crosswind disturbance study
+
+The disturbance case uses a `500 N` lateral-force pulse from `t = 2.0 s` to `t = 3.0 s`.
+
+Lane change:
+
+- no-wind `RMS(e_y) = 0.0017 m`
+- wind `RMS(e_y) = 0.0015 m`
+- wind `Max|delta_applied| = 0.0727 rad`
+
+Constant turn:
+
+- no-wind `RMS(e_y) = 0.0014 m`
+- wind `RMS(e_y) = 0.0013 m`
+- constrained steering behavior remains at the actuator limit with `Max|delta_rate| = 0.5000 rad/s`
+
+### Novelty residual separation
+
+For Scenario B with a 1-second rolling window (`M = 50` samples):
+
+- nominal `max(w_inf) = 1.69765e-4`, `max(w_max) = 1.69765e-4`
+- uncertainty `max(w_inf) = 1.2907e-2`, `max(w_max) = 1.2907e-2`
+- wind `max(w_inf) = 6.44901e-3`, `max(w_max) = 6.44901e-3`
+
+These values show that the residual monitor clearly separates nominal behavior from parameter mismatch and external disturbance.
+
 ## Workspace Structure
 
 The repository currently contains the following relevant files and folders:
